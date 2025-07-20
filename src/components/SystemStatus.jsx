@@ -12,13 +12,13 @@ const SystemStatus = () => {
   const getStatusInfo = (status) => {
     switch (status) {
       case 'ready':
-        return { icon: FiCheck, color: 'text-green-400', bg: 'bg-green-400/20', text: 'Ready' };
+        return { icon: FiCheck, color: 'text-success', bg: 'bg-success/20', text: 'Ready' };
       case 'processing':
-        return { icon: FiActivity, color: 'text-yellow-400', bg: 'bg-yellow-400/20', text: 'Processing' };
+        return { icon: FiActivity, color: 'text-warning', bg: 'bg-warning/20', text: 'Processing' };
       case 'listening':
-        return { icon: FiActivity, color: 'text-blue-400', bg: 'bg-blue-400/20', text: 'Listening' };
+        return { icon: FiActivity, color: 'text-axim-blue-light', bg: 'bg-axim-blue-light/20', text: 'Listening' };
       default:
-        return { icon: FiAlertCircle, color: 'text-gray-400', bg: 'bg-gray-400/20', text: 'Unknown' };
+        return { icon: FiAlertCircle, color: 'text-axim-gray', bg: 'bg-axim-gray/20', text: 'Unknown' };
     }
   };
 
@@ -28,7 +28,7 @@ const SystemStatus = () => {
     <motion.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
-      className="glass-morphism rounded-2xl p-6"
+      className="bg-axim-navy/90 backdrop-blur-md rounded-2xl p-6 border border-axim-gray-dark/30"
     >
       <h3 className="text-lg font-semibold text-white mb-4">System Status</h3>
       
@@ -39,30 +39,30 @@ const SystemStatus = () => {
           </div>
           <div>
             <p className="text-white font-medium">{statusInfo.text}</p>
-            <p className="text-onyx-400 text-sm">Core System</p>
+            <p className="text-axim-gray text-sm">Core System</p>
           </div>
         </div>
 
-        <div className="border-t border-onyx-700 pt-4">
-          <h4 className="text-sm font-medium text-onyx-200 mb-2">Available Tools</h4>
+        <div className="border-t border-axim-gray-dark pt-4">
+          <h4 className="text-sm font-medium text-axim-white mb-2">Available Tools</h4>
           <div className="space-y-2">
             {availableTools.slice(0, 4).map((tool) => (
               <div key={tool.name} className="flex items-center justify-between">
-                <span className="text-sm text-onyx-300">{tool.name}</span>
-                <SafeIcon icon={FiCheck} className="w-4 h-4 text-green-400" />
+                <span className="text-sm text-axim-gray-light">{tool.name}</span>
+                <SafeIcon icon={FiCheck} className="w-4 h-4 text-success" />
               </div>
             ))}
           </div>
         </div>
 
-        <div className="border-t border-onyx-700 pt-4">
+        <div className="border-t border-axim-gray-dark pt-4">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-onyx-300">Last Health Check</span>
-            <span className="text-onyx-400">2 min ago</span>
+            <span className="text-axim-gray-light">Last Health Check</span>
+            <span className="text-axim-gray">2 min ago</span>
           </div>
           <div className="flex items-center justify-between text-sm">
-            <span className="text-onyx-300">Uptime</span>
-            <span className="text-onyx-400">99.9%</span>
+            <span className="text-axim-gray-light">Uptime</span>
+            <span className="text-axim-gray">99.9%</span>
           </div>
         </div>
       </div>

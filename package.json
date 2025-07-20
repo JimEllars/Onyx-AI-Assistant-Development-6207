@@ -1,7 +1,7 @@
 {
   "name": "onyx-ai-assistant",
   "private": true,
-  "version": "1.2.0",
+  "version": "1.4.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -22,7 +22,11 @@
     "echarts-for-react": "^3.0.2",
     "date-fns": "4.1.0",
     "axios": "^1.6.0",
-    "lucide-react": "^0.263.1"
+    "lucide-react": "^0.263.1",
+    "rrule": "^2.8.1",
+    "luxon": "^3.4.4",
+    "@google/generative-ai": "^0.21.0",
+    "react-big-calendar": "^1.15.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.1",

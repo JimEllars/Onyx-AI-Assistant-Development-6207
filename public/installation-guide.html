@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Onyx AI Installation Guide</title>
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      color: #E6E8EC;
+      background: linear-gradient(135deg, #1A1E2D 0%, #252A3D 50%, #1A1E2D 100%);
+      margin: 0;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .logo {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #0059B2, #0086FF);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 30px auto;
+      font-size: 40px;
+      font-weight: bold;
+      color: white;
+    }
+    
+    h1 {
+      text-align: center;
+      margin-bottom: 40px;
+      font-size: 32px;
+      background: linear-gradient(135deg, #0059B2 0%, #0086FF 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    h2 {
+      color: white;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding-bottom: 10px;
+      margin-top: 40px;
+    }
+    
+    .card {
+      background: rgba(37, 42, 61, 0.5);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(61, 69, 97, 0.3);
+    }
+    
+    .steps {
+      counter-reset: step-counter;
+      list-style-type: none;
+      padding-left: 0;
+    }
+    
+    .steps li {
+      position: relative;
+      padding-left: 50px;
+      margin-bottom: 30px;
+      counter-increment: step-counter;
+    }
+    
+    .steps li::before {
+      content: counter(step-counter);
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 30px;
+      height: 30px;
+      background: linear-gradient(135deg, #0059B2, #0086FF);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+    }
+    
+    .note {
+      background: rgba(0, 89, 178, 0.1);
+      border-left: 3px solid #0086FF;
+      padding: 10px 15px;
+      margin: 20px 0;
+    }
+    
+    img {
+      max-width: 100%;
+      border-radius: 8px;
+      margin: 15px 0;
+      border: 1px solid rgba(61, 69, 97, 0.3);
+    }
+    
+    code {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+    
+    .tabs {
+      display: flex;
+      margin-bottom: 15px;
+    }
+    
+    .tab {
+      padding: 10px 15px;
+      background: rgba(37, 42, 61, 0.5);
+      border: 1px solid rgba(61, 69, 97, 0.3);
+      cursor: pointer;
+    }
+    
+    .tab.active {
+      background: rgba(0, 89, 178, 0.2);
+      border-color: rgba(0, 134, 255, 0.5);
+      color: white;
+    }
+    
+    .tab:first-child {
+      border-radius: 8px 0 0 8px;
+    }
+    
+    .tab:last-child {
+      border-radius: 0 8px 8px 0;
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    .feature-list {
+      list-style-type: none;
+      padding-left: 0;
+    }
+    
+    .feature-list li {
+      padding: 8px 0 8px 30px;
+      position: relative;
+    }
+    
+    .feature-list li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: #0086FF;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">O</div>
+    <h1>Onyx AI Installation Guide</h1>
+    
+    <div class="card">
+      <h2>Overview</h2>
+      <p>
+        Onyx AI Assistant is a powerful executive assistant designed specifically for James Ellars at AXiM Global. 
+        This guide will help you install both the main application on your Pixel phone and the companion app on your Google Watch.
+      </p>
+      
+      <div class="note">
+        <strong>Requirements:</strong> Google Pixel phone with Chrome browser, Google Watch with Wear OS 3+
+      </div>
+    </div>
+    
+    <div class="card">
+      <h2>Installing Onyx on Your Pixel Phone</h2>
+      <ol class="steps">
+        <li>
+          <strong>Open Chrome on your Pixel phone</strong>
+          <p>Launch the Chrome browser on your Pixel device.</p>
+        </li>
+        
+        <li>
+          <strong>Navigate to the Onyx web app</strong>
+          <p>Visit <code>https://onyx-ai.axim-global.com</code> in your browser.</p>
+        </li>
+        
+        <li>
+          <strong>Log in to your account</strong>
+          <p>Use the following credentials:</p>
+          <ul>
+            <li>Email: <code>demo@axim.global</code></li>
+            <li>Password: <code>axim2023</code></li>
+          </ul>
+        </li>
+        
+        <li>
+          <strong>Install as a PWA</strong>
+          <p>You will see an "Install Onyx AI" banner at the bottom of the screen. Tap "Install" to add it to your home screen.</p>
+          <p>Alternatively, tap the three dots menu in Chrome, then select "Install app" or "Add to Home Screen".</p>
+        </li>
+        
+        <li>
+          <strong>Complete the onboarding</strong>
+          <p>Follow the onboarding wizard to connect your Google Gemini API and Google Watch.</p>
+        </li>
+      </ol>
+    </div>
+    
+    <div class="card">
+      <h2>Installing Onyx on Your Google Watch</h2>
+      <ol class="steps">
+        <li>
+          <strong>Connect your watch to your phone</strong>
+          <p>Make sure your Google Watch is paired with your Pixel phone via the Wear OS app.</p>
+        </li>
+        
+        <li>
+          <strong>Enable the Watch companion</strong>
+          <p>In the Onyx app on your phone, go to Settings → Google Watch Integration and tap "Connect Watch".</p>
+        </li>
+        
+        <li>
+          <strong>Accept permissions</strong>
+          <p>On your watch, accept the permission requests for health data access and microphone usage.</p>
+        </li>
+        
+        <li>
+          <strong>Install the watch app</strong>
+          <p>The companion app will automatically install on your watch when you connect it from the phone app.</p>
+        </li>
+      </ol>
+      
+      <div class="note">
+        <strong>Tip:</strong> For a quick preview of how the watch app works, tap the watch icon in the bottom right corner of the main Onyx app.
+      </div>
+    </div>
+    
+    <div class="card">
+      <h2>Key Features</h2>
+      <div class="tabs">
+        <div class="tab active" onclick="showTab('phone')">Phone Features</div>
+        <div class="tab" onclick="showTab('watch')">Watch Features</div>
+      </div>
+      
+      <div class="tab-content active" id="phone-tab">
+        <ul class="feature-list">
+          <li>Enhanced AI responses powered by Google Gemini</li>
+          <li>Calendar scheduling and management</li>
+          <li>Email monitoring with ML-powered urgency detection</li>
+          <li>Google Drive integration</li>
+          <li>Proactive insights based on your data patterns</li>
+          <li>Background worker for recurring tasks</li>
+          <li>Watch health data integration</li>
+        </ul>
+      </div>
+      
+      <div class="tab-content" id="watch-tab">
+        <ul class="feature-list">
+          <li>Voice commands with "Hey Onyx" activation</li>
+          <li>Health monitoring with stress detection</li>
+          <li>Quick access to calendar and emails</li>
+          <li>Meeting notifications with contextual information</li>
+          <li>Stress level monitoring during meetings</li>
+          <li>Activity tracking with step counting</li>
+          <li>Seamless sync with phone app</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="card">
+      <h2>Troubleshooting</h2>
+      <p><strong>If the watch doesn't connect:</strong></p>
+      <ul>
+        <li>Ensure Bluetooth is enabled on your phone</li>
+        <li>Make sure your watch is updated to the latest Wear OS version</li>
+        <li>Try restarting both your phone and watch</li>
+        <li>In the Wear OS app, check if the connection is stable</li>
+      </ul>
+      
+      <p><strong>If Gemini integration fails:</strong></p>
+      <ul>
+        <li>Verify your API key is correct</li>
+        <li>Check your internet connection</li>
+        <li>Ensure you have sufficient quota in your Google AI Studio account</li>
+      </ul>
+    </div>
+    
+    <div class="card">
+      <h2>Support</h2>
+      <p>For any issues or questions, contact our support team:</p>
+      <ul>
+        <li>Email: support@axim-global.com</li>
+        <li>Phone: (555) 123-4567</li>
+      </ul>
+    </div>
+  </div>
+  
+  <script>
+    function showTab(tabId) {
+      // Hide all tab contents
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+      });
+      
+      // Deactivate all tabs
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      // Activate the selected tab and content
+      document.getElementById(`${tabId}-tab`).classList.add('active');
+      document.querySelector(`.tab[onclick="showTab('${tabId}')"]`).classList.add('active');
+    }
+  </script>
+</body>
+</html>

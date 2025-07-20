@@ -14,27 +14,22 @@ const ToolsPanel = () => {
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: 0.2 }}
-      className="glass-morphism rounded-2xl p-6"
+      className="bg-axim-navy/90 backdrop-blur-md rounded-2xl p-6 border border-axim-gray-dark/30"
     >
       <h3 className="text-lg font-semibold text-white mb-4">Available Tools</h3>
-      
       <div className="space-y-3">
         {availableTools.map((tool) => (
-          <div key={tool.name} className="border border-onyx-600/50 rounded-lg p-3">
+          <div key={tool.name} className="border border-axim-gray-dark/50 rounded-lg p-3">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center space-x-2">
-                <SafeIcon icon={FiTool} className="w-4 h-4 text-accent-400" />
+                <SafeIcon icon={FiTool} className="w-4 h-4 text-axim-blue-light" />
                 <span className="text-white text-sm font-medium">{tool.name}</span>
               </div>
-              <SafeIcon icon={FiCheck} className="w-4 h-4 text-green-400" />
+              <SafeIcon icon={FiCheck} className="w-4 h-4 text-success" />
             </div>
-            
             <div className="flex flex-wrap gap-1">
               {tool.methods.map((method) => (
-                <span
-                  key={method}
-                  className="px-2 py-1 bg-onyx-700/50 text-onyx-300 text-xs rounded"
-                >
+                <span key={method} className="px-2 py-1 bg-axim-navy-dark/50 text-axim-gray-light text-xs rounded">
                   {method}
                 </span>
               ))}
