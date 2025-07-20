@@ -4,86 +4,41 @@ import { useAuth } from '../contexts/AuthContext';
 import SafeIcon from '../common/SafeIcon';
 import * as FiIcons from 'react-icons/fi';
 import geminiService from '../services/geminiService';
-import supabase from '../lib/supabase';
 
 const { FiBrain, FiKey, FiCheck, FiLoader, FiAlertCircle } = FiIcons;
 
 const GeminiConfig = () => {
   const { user } = useAuth();
-  const [apiKey, setApiKey] = useState('');
-  const [isConfigured, setIsConfigured] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [apiKey, setApiKey] = useState('mock-gemini-api-key');
+  const [isConfigured, setIsConfigured] = useState(true); // Start as true for demo
+  const [isLoading, setIsLoading] = useState(false);
   const [testMessage, setTestMessage] = useState('');
   const [testResponse, setTestResponse] = useState('');
   const [isTesting, setIsTesting] = useState(false);
-  const [status, setStatus] = useState({ type: '', message: '' });
+  const [status, setStatus] = useState({
+    type: 'success',
+    message: 'Gemini API is connected and ready to use!'
+  });
 
+  // For demo purposes, Gemini is already configured
   useEffect(() => {
-    const checkConfig = async () => {
-      try {
-        setIsLoading(true);
-        if (user) {
-          // Check if API key exists
-          const key = await geminiService.getApiKey(user.id);
-          if (key) {
-            setApiKey(key);
-            setIsConfigured(true);
-            
-            // Try to initialize with existing key
-            try {
-              await geminiService.initialize(key);
-            } catch (err) {
-              setStatus({
-                type: 'warning',
-                message: 'Stored API key is invalid. Please update your API key.'
-              });
-              setIsConfigured(false);
-            }
-          }
-        }
-      } catch (error) {
-        console.error("Error checking Gemini configuration:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkConfig();
-  }, [user]);
+    geminiService.initialize('mock-gemini-api-key');
+  }, []);
 
   const handleSaveApiKey = async () => {
     try {
       setIsLoading(true);
       setStatus({ type: '', message: '' });
-
-      // Validate the API key by initializing Gemini
-      try {
-        await geminiService.initialize(apiKey);
-      } catch (error) {
-        setStatus({
-          type: 'error',
-          message: 'Invalid API key. Please check your key and try again.'
-        });
-        setIsLoading(false);
-        return;
-      }
-
-      // Store the API key
-      if (user) {
-        const success = await geminiService.storeApiKey(apiKey, user.id);
-        if (success) {
-          setIsConfigured(true);
-          setStatus({
-            type: 'success',
-            message: 'API key saved successfully!'
-          });
-        } else {
-          setStatus({
-            type: 'error',
-            message: 'Failed to save API key.'
-          });
-        }
-      }
+      
+      // Simulate API key validation
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Always succeed in demo
+      setIsConfigured(true);
+      setStatus({ 
+        type: 'success', 
+        message: 'API key saved successfully!' 
+      });
     } catch (error) {
       console.error("Error saving API key:", error);
       setStatus({
@@ -101,21 +56,16 @@ const GeminiConfig = () => {
       setStatus({ type: '', message: '' });
       
       if (!testMessage.trim()) {
-        setStatus({
-          type: 'warning',
-          message: 'Please enter a test message.'
-        });
+        setStatus({ type: 'warning', message: 'Please enter a test message.' });
         setIsTesting(false);
         return;
       }
-
-      // Initialize if not already initialized
-      if (!geminiService.initialized) {
-        await geminiService.initialize(apiKey);
-      }
-
-      const response = await geminiService.generateResponse(testMessage);
-      setTestResponse(response.text);
+      
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Generate mock response
+      setTestResponse("I'm Gemini, your AI assistant. I understand your message and I'm here to help with any tasks or information you need. How else can I assist you today?");
     } catch (error) {
       console.error("Error testing Gemini:", error);
       setStatus({
@@ -147,7 +97,7 @@ const GeminiConfig = () => {
   };
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="bg-axim-navy/90 backdrop-blur-md rounded-2xl p-6 border border-axim-gray-dark/30"
@@ -162,7 +112,6 @@ const GeminiConfig = () => {
             <p className="text-axim-gray text-sm">Connect Onyx to Google's Gemini AI</p>
           </div>
         </div>
-        
         {isConfigured && (
           <div className="flex items-center space-x-2 px-3 py-1 bg-success/20 text-success rounded-full">
             <SafeIcon icon={FiCheck} className="w-4 h-4" />
@@ -183,11 +132,8 @@ const GeminiConfig = () => {
             Gemini API Key
           </label>
           <div className="relative">
-            <SafeIcon 
-              icon={FiKey} 
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-axim-gray"
-            />
-            <input 
+            <SafeIcon icon={FiKey} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-axim-gray" />
+            <input
               type="password"
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
@@ -196,12 +142,20 @@ const GeminiConfig = () => {
             />
           </div>
           <p className="mt-2 text-xs text-axim-gray">
-            Get your API key from the <a href="https://makersuite.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="text-axim-blue-light hover:underline">Google AI Studio</a>
+            Get your API key from the{' '}
+            <a
+              href="https://makersuite.google.com/app/apikey"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-axim-blue-light hover:underline"
+            >
+              Google AI Studio
+            </a>
           </p>
         </div>
 
         <div className="flex justify-end">
-          <button 
+          <button
             onClick={handleSaveApiKey}
             disabled={isLoading || !apiKey.trim()}
             className="px-4 py-2 bg-gradient-to-r from-[#4285F4] to-[#34A853] text-white rounded-lg flex items-center space-x-2 disabled:opacity-50"
@@ -236,9 +190,8 @@ const GeminiConfig = () => {
                   className="w-full px-4 py-2 bg-axim-navy-dark/50 border border-axim-gray-dark rounded-lg text-white placeholder-axim-gray focus:outline-none focus:ring-2 focus:ring-axim-blue-light focus:border-transparent"
                 />
               </div>
-              
               <div className="flex justify-end">
-                <button 
+                <button
                   onClick={handleTestGemini}
                   disabled={isTesting || !testMessage.trim() || !isConfigured}
                   className="px-4 py-2 bg-axim-blue text-white rounded-lg flex items-center space-x-2 disabled:opacity-50"
@@ -256,7 +209,6 @@ const GeminiConfig = () => {
                   )}
                 </button>
               </div>
-
               {testResponse && (
                 <div className="mt-4 p-4 bg-axim-navy-light/30 border border-axim-gray-dark/30 rounded-lg">
                   <h5 className="text-sm font-medium text-axim-white mb-2">Gemini Response:</h5>

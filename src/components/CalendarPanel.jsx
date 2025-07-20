@@ -1,32 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay, addDays } from 'date-fns';
 import SafeIcon from '../common/SafeIcon';
 import * as FiIcons from 'react-icons/fi';
 import googleCalendarService from '../services/googleCalendarService';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 const { FiCalendar, FiRefreshCw, FiPlus, FiClock, FiMapPin, FiUsers } = FiIcons;
 
-// Setup localizer for the calendar
-const locales = {
-  'en-US': require('date-fns/locale/en-US')
-};
-
-const localizer = dateFnsLocalizer({
-  format,
-  parse,
-  startOfWeek,
-  getDay,
-  locales
-});
-
+// Simplified Calendar component without react-big-calendar dependency
 const CalendarPanel = () => {
   const [events, setEvents] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [viewMode, setViewMode] = useState('month'); // 'month', 'week', 'day'
+  const [currentDate, setCurrentDate] = useState(new Date());
 
   useEffect(() => {
     initializeCalendar();
@@ -36,7 +24,6 @@ const CalendarPanel = () => {
     try {
       setIsLoading(true);
       const success = await googleCalendarService.initGoogleCalendar();
-      
       if (success) {
         setIsInitialized(true);
         await loadEvents();
@@ -85,18 +72,59 @@ const CalendarPanel = () => {
     setSelectedEvent(null);
   };
 
-  const eventStyleGetter = (event) => {
-    const style = {
-      backgroundColor: '#0059B2',
-      borderRadius: '4px',
-      opacity: 0.8,
-      color: 'white',
-      border: '0',
-      display: 'block'
-    };
-    return {
-      style
-    };
+  // Generate calendar days for the current month view
+  const generateCalendarDays = () => {
+    const monthStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    const monthEnd = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+    const startDate = startOfWeek(monthStart);
+    
+    const days = [];
+    let day = startDate;
+    
+    for (let i = 0; i < 35; i++) {
+      days.push(new Date(day));
+      day = addDays(day, 1);
+    }
+    
+    return days;
+  };
+
+  // Find events for a specific day
+  const getEventsForDay = (day) => {
+    return events.filter(event => {
+      const eventDate = new Date(event.start);
+      return eventDate.getDate() === day.getDate() && 
+             eventDate.getMonth() === day.getMonth() &&
+             eventDate.getFullYear() === day.getFullYear();
+    });
+  };
+
+  // Format date for display
+  const formatDay = (date) => {
+    return format(date, 'd');
+  };
+
+  // Check if date is today
+  const isToday = (date) => {
+    const today = new Date();
+    return date.getDate() === today.getDate() &&
+           date.getMonth() === today.getMonth() &&
+           date.getFullYear() === today.getFullYear();
+  };
+
+  // Check if date is in current month
+  const isCurrentMonth = (date) => {
+    return date.getMonth() === currentDate.getMonth();
+  };
+
+  // Navigate to previous month
+  const previousMonth = () => {
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
+  };
+
+  // Navigate to next month
+  const nextMonth = () => {
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
   };
 
   return (
@@ -113,11 +141,12 @@ const CalendarPanel = () => {
             disabled={isLoading || !isInitialized}
             className="p-2 text-axim-gray hover:text-white transition-colors rounded-lg hover:bg-axim-navy-dark/50 disabled:opacity-50"
           >
-            <SafeIcon icon={FiRefreshCw} className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
+            <SafeIcon
+              icon={FiRefreshCw}
+              className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`}
+            />
           </button>
-          <button
-            className="p-2 text-axim-gray hover:text-white transition-colors rounded-lg hover:bg-axim-navy-dark/50"
-          >
+          <button className="p-2 text-axim-gray hover:text-white transition-colors rounded-lg hover:bg-axim-navy-dark/50">
             <SafeIcon icon={FiPlus} className="w-5 h-5" />
           </button>
         </div>
@@ -148,25 +177,86 @@ const CalendarPanel = () => {
           </button>
         </div>
       ) : (
-        <div className="calendar-container" style={{ height: 600 }}>
-          <Calendar
-            localizer={localizer}
-            events={events}
-            startAccessor="start"
-            endAccessor="end"
-            style={{ height: '100%' }}
-            onSelectEvent={handleEventSelect}
-            eventPropGetter={eventStyleGetter}
-            views={['month', 'week', 'day']}
-            className="custom-calendar"
-          />
-          
+        <div className="calendar-container">
+          {/* Calendar Header */}
+          <div className="flex items-center justify-between mb-4">
+            <h4 className="text-white font-medium">
+              {format(currentDate, 'MMMM yyyy')}
+            </h4>
+            <div className="flex items-center space-x-2">
+              <button 
+                onClick={previousMonth}
+                className="p-1 text-axim-gray hover:text-white transition-colors rounded-lg hover:bg-axim-navy-dark/50"
+              >
+                <SafeIcon icon={FiIcons.FiChevronLeft} className="w-5 h-5" />
+              </button>
+              <button 
+                onClick={nextMonth}
+                className="p-1 text-axim-gray hover:text-white transition-colors rounded-lg hover:bg-axim-navy-dark/50"
+              >
+                <SafeIcon icon={FiIcons.FiChevronRight} className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+
+          {/* Calendar Grid */}
+          <div className="grid grid-cols-7 gap-1 mb-4">
+            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+              <div key={day} className="text-center text-axim-gray text-sm py-1">
+                {day}
+              </div>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-7 gap-1">
+            {generateCalendarDays().map((day, i) => {
+              const dayEvents = getEventsForDay(day);
+              const isCurrentDay = isToday(day);
+              const inCurrentMonth = isCurrentMonth(day);
+              
+              return (
+                <div 
+                  key={i}
+                  className={`min-h-[80px] p-1 border border-axim-gray-dark/30 rounded-md ${
+                    isCurrentDay 
+                      ? 'bg-axim-blue/20' 
+                      : inCurrentMonth 
+                        ? 'bg-axim-navy-dark/30' 
+                        : 'bg-axim-navy-dark/10'
+                  }`}
+                >
+                  <div className={`text-right text-sm mb-1 ${
+                    inCurrentMonth ? 'text-white' : 'text-axim-gray'
+                  }`}>
+                    {formatDay(day)}
+                  </div>
+                  <div className="space-y-1">
+                    {dayEvents.slice(0, 2).map((event, idx) => (
+                      <div 
+                        key={idx}
+                        onClick={() => handleEventSelect(event)}
+                        className="text-xs p-1 rounded bg-axim-blue text-white truncate cursor-pointer"
+                      >
+                        {event.title}
+                      </div>
+                    ))}
+                    {dayEvents.length > 2 && (
+                      <div className="text-xs text-axim-gray-light text-center">
+                        +{dayEvents.length - 2} more
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
           {isLoading && (
             <div className="absolute inset-0 flex items-center justify-center bg-axim-navy-dark/50 backdrop-blur-sm">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-axim-blue"></div>
             </div>
           )}
-          
+
           {selectedEvent && (
             <div className="fixed inset-0 flex items-center justify-center z-50 bg-axim-navy-dark/50 backdrop-blur-sm">
               <motion.div
@@ -183,7 +273,6 @@ const CalendarPanel = () => {
                     <SafeIcon icon={FiIcons.FiX} className="w-5 h-5" />
                   </button>
                 </div>
-                
                 <div className="space-y-4">
                   <div className="flex items-center space-x-3">
                     <SafeIcon icon={FiClock} className="w-5 h-5 text-axim-blue-light" />
@@ -192,20 +281,17 @@ const CalendarPanel = () => {
                       <p className="text-axim-gray-light text-sm">{selectedEvent.formattedTime}</p>
                     </div>
                   </div>
-                  
                   {selectedEvent.location && (
                     <div className="flex items-center space-x-3">
                       <SafeIcon icon={FiMapPin} className="w-5 h-5 text-axim-blue-light" />
                       <p className="text-white">{selectedEvent.location}</p>
                     </div>
                   )}
-                  
                   {selectedEvent.description && (
                     <div className="border-t border-axim-gray-dark pt-3 mt-3">
                       <p className="text-axim-gray-light">{selectedEvent.description}</p>
                     </div>
                   )}
-                  
                   {selectedEvent.attendees && selectedEvent.attendees.length > 0 && (
                     <div className="border-t border-axim-gray-dark pt-3 mt-3">
                       <div className="flex items-center space-x-2 mb-2">
@@ -216,25 +302,26 @@ const CalendarPanel = () => {
                         {selectedEvent.attendees.map((attendee, index) => (
                           <div key={index} className="flex items-center justify-between">
                             <p className="text-white text-sm">{attendee.email}</p>
-                            <span className={`text-xs px-2 py-1 rounded-full ${
-                              attendee.responseStatus === 'accepted' 
-                                ? 'bg-success/20 text-success' 
-                                : attendee.responseStatus === 'tentative'
+                            <span
+                              className={`text-xs px-2 py-1 rounded-full ${
+                                attendee.responseStatus === 'accepted'
+                                  ? 'bg-success/20 text-success'
+                                  : attendee.responseStatus === 'tentative'
                                   ? 'bg-warning/20 text-warning'
                                   : 'bg-axim-gray-dark/20 text-axim-gray'
-                            }`}>
-                              {attendee.responseStatus === 'accepted' 
-                                ? 'Accepted' 
+                              }`}
+                            >
+                              {attendee.responseStatus === 'accepted'
+                                ? 'Accepted'
                                 : attendee.responseStatus === 'tentative'
-                                  ? 'Tentative'
-                                  : 'Pending'}
+                                ? 'Tentative'
+                                : 'Pending'}
                             </span>
                           </div>
                         ))}
                       </div>
                     </div>
                   )}
-                  
                   <div className="flex justify-end space-x-3 pt-3 mt-3 border-t border-axim-gray-dark">
                     <button className="px-4 py-2 bg-axim-navy-light border border-axim-gray-dark text-axim-gray-light rounded-lg">
                       Edit
@@ -249,42 +336,6 @@ const CalendarPanel = () => {
           )}
         </div>
       )}
-      
-      <style jsx>{`
-        .custom-calendar {
-          background-color: rgba(26, 30, 45, 0.5);
-          color: #E6E8EC;
-          border-radius: 0.5rem;
-          padding: 1rem;
-        }
-        .custom-calendar .rbc-header {
-          padding: 0.5rem;
-          background-color: rgba(26, 30, 45, 0.8);
-          color: #B0B7C3;
-        }
-        .custom-calendar .rbc-day-bg {
-          background-color: rgba(26, 30, 45, 0.3);
-        }
-        .custom-calendar .rbc-today {
-          background-color: rgba(0, 89, 178, 0.2);
-        }
-        .custom-calendar .rbc-off-range-bg {
-          background-color: rgba(18, 21, 31, 0.5);
-        }
-        .custom-calendar .rbc-toolbar button {
-          color: #B0B7C3;
-          background-color: rgba(26, 30, 45, 0.8);
-          border-color: #3D4561;
-        }
-        .custom-calendar .rbc-toolbar button:hover {
-          background-color: rgba(0, 89, 178, 0.2);
-          color: #E6E8EC;
-        }
-        .custom-calendar .rbc-toolbar button.rbc-active {
-          background-color: rgba(0, 89, 178, 0.5);
-          color: white;
-        }
-      `}</style>
     </motion.div>
   );
 };

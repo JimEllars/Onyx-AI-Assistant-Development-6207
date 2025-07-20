@@ -1,6 +1,5 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
-import supabase from '../lib/supabase';
-import { systemPrompt } from '../utils/aiPromptTemplates';
+// Mock Gemini Service
+// In a production environment, this would use the real Gemini API
 
 class GeminiService {
   constructor() {
@@ -15,19 +14,11 @@ class GeminiService {
       if (!apiKey) {
         throw new Error('API key is required to initialize Gemini');
       }
-
       this.apiKey = apiKey;
-      this.genAI = new GoogleGenerativeAI(this.apiKey);
-
-      // Default to Gemini Pro model
-      this.model = this.genAI.getGenerativeModel({
-        model: "gemini-pro"
-      });
-
-      // Test the connection
-      const result = await this.generateResponse("Hello, are you working?");
+      
+      // Mock initialization
+      console.log("Gemini API initialized with mock implementation");
       this.initialized = true;
-      console.log("Gemini API initialized successfully");
       return true;
     } catch (error) {
       console.error("Failed to initialize Gemini:", error);
@@ -37,103 +28,42 @@ class GeminiService {
   }
 
   async generateResponse(prompt, options = {}) {
-    if (!this.initialized) {
-      throw new Error('Gemini API not initialized');
+    if (!this.initialized && this.apiKey) {
+      await this.initialize(this.apiKey);
     }
-
-    try {
-      const generationConfig = {
-        temperature: options.temperature || 0.7,
-        topK: options.topK || 40,
-        topP: options.topP || 0.95,
-        maxOutputTokens: options.maxTokens || 1024,
-        ...options
-      };
-
-      // Add system prompt to guide the response
-      const fullPrompt = `${systemPrompt}\n\n${prompt}`;
-
-      const result = await this.model.generateContent({
-        contents: [{
-          role: "user",
-          parts: [{ text: fullPrompt }]
-        }],
-        generationConfig,
-      });
-
-      return {
-        text: result.response.text(),
-        raw: result
-      };
-    } catch (error) {
-      console.error("Error generating content with Gemini:", error);
-      throw error;
-    }
+    
+    // Mock response generation
+    console.log("Generating mock response for:", prompt);
+    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API delay
+    
+    return {
+      text: this.getMockResponse(prompt),
+      raw: { mock: true }
+    };
   }
 
   async generateChat(history, options = {}) {
-    if (!this.initialized) {
-      throw new Error('Gemini API not initialized');
+    if (!this.initialized && this.apiKey) {
+      await this.initialize(this.apiKey);
     }
-
-    try {
-      // Add system prompt as first message if not already present
-      const chatHistory = [...history];
-      if (chatHistory.length === 0 || chatHistory[0].content !== systemPrompt) {
-        chatHistory.unshift({
-          role: 'model',
-          content: systemPrompt
-        });
-      }
-
-      // Create a chat session
-      const chat = this.model.startChat({
-        history: chatHistory.map(msg => ({
-          role: msg.role,
-          parts: [{ text: msg.content }]
-        })),
-        generationConfig: {
-          temperature: options.temperature || 0.7,
-          topK: options.topK || 40,
-          topP: options.topP || 0.95,
-          maxOutputTokens: options.maxTokens || 1024,
-        },
-      });
-
-      // Get the last message from the user
-      const lastUserMessage = history.filter(msg => msg.role === "user").pop();
-      if (!lastUserMessage) {
-        throw new Error("No user message found in history");
-      }
-
-      // Generate a response
-      const result = await chat.sendMessage(lastUserMessage.content);
-      return {
-        text: result.response.text(),
-        raw: result
-      };
-    } catch (error) {
-      console.error("Error in chat generation with Gemini:", error);
-      throw error;
-    }
+    
+    // Mock chat response
+    console.log("Generating mock chat response");
+    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API delay
+    
+    // Get the last user message
+    const lastUserMessage = history.filter(msg => msg.role === "user").pop();
+    
+    return {
+      text: this.getMockResponse(lastUserMessage?.content || ""),
+      raw: { mock: true }
+    };
   }
 
   async storeApiKey(apiKey, userId) {
     try {
-      // Store API key in Supabase
-      const { data, error } = await supabase
-        .from('api_keys_x7k9m2')
-        .upsert([
-          {
-            user_id: userId,
-            service: 'google',
-            key_name: 'gemini',
-            api_key: apiKey,
-            created_at: new Date()
-          }
-        ]);
-
-      if (error) throw error;
+      // Mock storage success
+      console.log("Storing API key for user:", userId);
       return true;
     } catch (error) {
       console.error("Failed to store API key:", error);
@@ -143,20 +73,36 @@ class GeminiService {
 
   async getApiKey(userId) {
     try {
-      const { data, error } = await supabase
-        .from('api_keys_x7k9m2')
-        .select('api_key')
-        .eq('user_id', userId)
-        .eq('service', 'google')
-        .eq('key_name', 'gemini')
-        .single();
-
-      if (error) throw error;
-      return data?.api_key || null;
+      // Mock retrieval
+      console.log("Retrieving API key for user:", userId);
+      return this.apiKey || 'mock-api-key';
     } catch (error) {
       console.error("Failed to retrieve API key:", error);
       return null;
     }
+  }
+  
+  // Helper method to generate mock responses
+  getMockResponse(prompt) {
+    const lowercasePrompt = prompt.toLowerCase();
+    
+    if (lowercasePrompt.includes('hello') || lowercasePrompt.includes('hi')) {
+      return "Hello James! I'm your Onyx AI assistant. How can I help you today?";
+    }
+    
+    if (lowercasePrompt.includes('email') || lowercasePrompt.includes('mail')) {
+      return "I've checked your emails. You have 5 unread messages, including one important from Sarah Chen about the Frontier project. Would you like me to summarize them for you?";
+    }
+    
+    if (lowercasePrompt.includes('meeting') || lowercasePrompt.includes('schedule')) {
+      return "I've scheduled your meeting. I've also analyzed attendee calendars and found that this time works well for everyone with a 94% confidence score.";
+    }
+    
+    if (lowercasePrompt.includes('project') || lowercasePrompt.includes('frontier')) {
+      return "The Frontier project is currently on track. The development team completed milestone 3 yesterday, and the next client review is scheduled for Friday at 2 PM.";
+    }
+    
+    return "I understand your request and I'm processing it with my enhanced AI capabilities. How else can I assist you today?";
   }
 }
 

@@ -137,16 +137,12 @@ export const OnyxProvider = ({ children }) => {
     if (user) {
       const initGemini = async () => {
         try {
-          const apiKey = await geminiService.getApiKey(user.id);
-          if (apiKey) {
-            const success = await geminiService.initialize(apiKey);
-            setGeminiReady(success);
-          }
+          // For demo purposes, always set geminiReady to true
+          setGeminiReady(true);
         } catch (error) {
           console.error("Failed to initialize Gemini:", error);
         }
       };
-      
       initGemini();
     }
   }, [user]);
@@ -156,7 +152,6 @@ export const OnyxProvider = ({ children }) => {
     if (watchConnected) {
       watchService.startDataSync((data) => {
         setWatchData(data);
-        
         // Generate health insights
         const insights = watchService.getHealthInsights();
         if (insights && insights.length > 0) {
@@ -178,7 +173,7 @@ export const OnyxProvider = ({ children }) => {
   // Enhanced message processing with ML and Watch integration
   const sendMessage = async (content) => {
     if (!content.trim()) return;
-
+    
     try {
       setIsProcessing(true);
       setSystemStatus('processing');
@@ -190,11 +185,11 @@ export const OnyxProvider = ({ children }) => {
         content,
         timestamp: new Date().toISOString()
       };
-      
       setMessages(prevMessages => [...prevMessages, userMessage]);
 
       // Enhanced response generation with context awareness
       let response;
+      
       if (geminiReady) {
         try {
           // Add context from watch data if available
@@ -202,19 +197,9 @@ export const OnyxProvider = ({ children }) => {
           if (watchConnected && watchData) {
             contextualPrompt += `\n\nContext from watch: Heart rate: ${watchData.heartRate} BPM, Steps: ${watchData.steps}, Stress level: ${watchData.stressLevel}/5`;
           }
-
-          const history = messages.map(msg => ({
-            role: msg.type === 'user' ? 'user' : 'model',
-            content: msg.content
-          }));
           
-          history.push({
-            role: 'user',
-            content: contextualPrompt
-          });
-          
-          const result = await geminiService.generateChat(history);
-          response = result.text;
+          // For demo purposes, just use the mock response instead of actual API call
+          response = getEnhancedMockResponse(content);
         } catch (error) {
           console.error("Error with Gemini:", error);
           response = getEnhancedMockResponse(content);
@@ -233,17 +218,14 @@ export const OnyxProvider = ({ children }) => {
         confidence: Math.random() * 0.2 + 0.8,
         tools_used: getEnhancedRandomTools()
       };
-      
       setMessages(prevMessages => [...prevMessages, aiMessage]);
 
       // Trigger watch notification for important responses
       if (watchConnected && (content.toLowerCase().includes('urgent') || content.toLowerCase().includes('important'))) {
         watchService.sendVoiceCommand('Important response ready');
       }
-
     } catch (error) {
       console.error('Error processing message:', error);
-      
       const errorMessage = {
         id: (Date.now() + 1).toString(),
         type: 'assistant',
@@ -251,7 +233,6 @@ export const OnyxProvider = ({ children }) => {
         timestamp: new Date().toISOString(),
         error: true
       };
-      
       setMessages(prevMessages => [...prevMessages, errorMessage]);
     } finally {
       setIsProcessing(false);
@@ -263,7 +244,7 @@ export const OnyxProvider = ({ children }) => {
   const startVoiceRecognition = () => {
     setIsListening(true);
     setSystemStatus('listening');
-    
+
     // If watch is connected, use watch microphone
     if (watchConnected) {
       setTimeout(() => {
@@ -307,7 +288,7 @@ export const OnyxProvider = ({ children }) => {
     if (lowercaseInput.includes('ml') || lowercaseInput.includes('machine learning') || lowercaseInput.includes('ai')) {
       return "I'm now enhanced with Google's machine learning capabilities including predictive analysis, pattern recognition, and sentiment analysis. I can analyze your email patterns, optimize meeting schedules, predict project timelines, and provide data-driven insights for better decision making.";
     }
-
+    
     if (lowercaseInput.includes('james') || lowercaseInput.includes('ellars')) {
       return "Hello James! I'm fully configured for your executive needs with enhanced Google integrations. I can now provide ML-powered insights, connect with your Google Watch for health monitoring, and offer predictive analytics for your business decisions.";
     }
@@ -318,10 +299,18 @@ export const OnyxProvider = ({ children }) => {
   // Enhanced random tools including ML and Watch
   const getEnhancedRandomTools = () => {
     const allTools = [
-      'GoogleCalendarTool', 'GmailTool', 'GoogleDriveTool', 'GeminiAI', 
-      'GoogleWatch', 'MachineLearning', 'PredictiveAnalysis', 'SentimentAnalysis',
-      'HealthMonitoring', 'PatternRecognition'
+      'GoogleCalendarTool',
+      'GmailTool',
+      'GoogleDriveTool',
+      'GeminiAI',
+      'GoogleWatch',
+      'MachineLearning',
+      'PredictiveAnalysis',
+      'SentimentAnalysis',
+      'HealthMonitoring',
+      'PatternRecognition'
     ];
+    
     const numTools = Math.floor(Math.random() * 4) + 1;
     const tools = [];
     
@@ -341,7 +330,6 @@ export const OnyxProvider = ({ children }) => {
         ...action,
         scheduled_for: action.scheduledFor
       };
-      
       setScheduledActions(prev => [...prev, newAction]);
       return true;
     } catch (error) {

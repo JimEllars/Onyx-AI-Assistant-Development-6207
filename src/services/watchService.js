@@ -16,18 +16,10 @@ class WatchService {
     try {
       console.log('Attempting to connect to Google Watch...');
       
-      // In a real implementation, this would:
-      // 1. Check if Wear OS companion app is available
-      // 2. Request permissions for health data
-      // 3. Establish WebSocket or Bluetooth connection
-      // 4. Authenticate with the watch
-      
       // Simulate connection process
       await this.simulateConnection();
-      
       this.isConnected = true;
       this.startHealthMonitoring();
-      
       console.log('Google Watch connected successfully');
       return true;
     } catch (error) {
@@ -41,7 +33,6 @@ class WatchService {
       this.isConnected = false;
       this.stopHealthMonitoring();
       this.watchData = null;
-      
       console.log('Google Watch disconnected');
       return true;
     } catch (error) {
@@ -67,7 +58,7 @@ class WatchService {
         stressLevel: Math.max(1, Math.min(5, (this.watchData?.stressLevel || 2) + (Math.random() - 0.5))),
         lastUpdate: new Date().toISOString()
       };
-
+      
       if (this.dataCallback) {
         this.dataCallback(this.watchData);
       }
@@ -103,16 +94,11 @@ class WatchService {
     if (!this.isConnected) {
       throw new Error('Watch not connected');
     }
-
-    console.log(`Sending voice command to watch: ${command}`);
     
+    console.log(`Sending voice command to watch: ${command}`);
     // In a real implementation, this would send the command to the watch
     // and potentially trigger haptic feedback or voice responses
-    
-    return {
-      success: true,
-      response: `Command "${command}" sent to watch`
-    };
+    return { success: true, response: `Command "${command}" sent to watch` };
   }
 
   // Quick action triggers
@@ -120,27 +106,23 @@ class WatchService {
     if (!this.isConnected) {
       throw new Error('Watch not connected');
     }
-
+    
     const actions = {
       'schedule_meeting': 'Opening calendar on watch',
       'send_message': 'Opening message composer on watch',
       'check_emails': 'Displaying email summary on watch',
       'start_timer': 'Timer started on watch'
     };
-
+    
     const response = actions[action] || 'Unknown action';
     console.log(`Quick action triggered: ${response}`);
-    
-    return {
-      success: true,
-      response
-    };
+    return { success: true, response };
   }
 
   // Health data analysis
   getHealthInsights() {
     if (!this.watchData) return null;
-
+    
     const insights = [];
     
     if (this.watchData.heartRate > 90) {
@@ -150,7 +132,7 @@ class WatchService {
         priority: 'medium'
       });
     }
-
+    
     if (this.watchData.stressLevel > 3) {
       insights.push({
         type: 'warning',
@@ -158,7 +140,7 @@ class WatchService {
         priority: 'high'
       });
     }
-
+    
     if (this.watchData.steps < 1000) {
       insights.push({
         type: 'info',
@@ -166,26 +148,23 @@ class WatchService {
         priority: 'low'
       });
     }
-
+    
     return insights;
   }
 
   // Meeting context awareness
   async enableMeetingMode() {
     if (!this.isConnected) return false;
-
     console.log('Enabling meeting mode on watch');
     // This would:
     // 1. Enable do not disturb
     // 2. Start stress monitoring
     // 3. Prepare quick meeting actions
-    
     return true;
   }
 
   async disableMeetingMode() {
     if (!this.isConnected) return false;
-
     console.log('Disabling meeting mode on watch');
     return true;
   }

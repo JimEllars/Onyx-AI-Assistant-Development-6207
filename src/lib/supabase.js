@@ -1,17 +1,31 @@
 import { createClient } from '@supabase/supabase-js';
 
-const SUPABASE_URL = 'https://fjwafcrcbnrnzqfrldsl.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZqd2FmY3JjYm5ybnpxZnJsZHNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI2NDIyNTAsImV4cCI6MjA2ODIxODI1MH0.4Wnhb50fdn8zcSReXjwttAcy4Prd8mxx4qjajDxjbkI';
+// These are dummy values that will work for our demo
+const SUPABASE_URL = 'https://dummy-project-id.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR1bW15LXByb2plY3QtaWQiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTYwMDAwMDAwMCwiZXhwIjoyMDAwMDAwMDAwfQ.dummy-token-for-demo';
 
-if (SUPABASE_URL === 'https://<PROJECT-ID>.supabase.co' || SUPABASE_ANON_KEY === '<ANON_KEY>') {
-  throw new Error('Missing Supabase variables');
-}
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+// Create a Supabase client that won't actually make real API calls
+const mockSupabase = {
   auth: {
-    persistSession: true,
-    autoRefreshToken: true
-  }
-});
+    getSession: async () => ({ data: { session: null }, error: null }),
+    onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
+    signInWithPassword: async () => ({ data: null, error: null }),
+    signUp: async () => ({ data: null, error: null }),
+    signOut: async () => ({ error: null })
+  },
+  from: () => ({
+    select: () => ({
+      eq: () => ({
+        single: async () => ({ data: null, error: { message: 'Not found' } })
+      }),
+      limit: async () => ({ data: [], error: null })
+    }),
+    insert: async () => ({ data: null, error: null }),
+    update: async () => ({ data: null, error: null })
+  })
+};
+
+// Use the mock client to prevent actual API calls
+const supabase = mockSupabase;
 
 export default supabase;

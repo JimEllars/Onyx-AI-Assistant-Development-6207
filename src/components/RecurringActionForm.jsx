@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import * as FiIcons from 'react-icons/fi';
 import SafeIcon from '../common/SafeIcon';
 import { useOnyx } from '../contexts/OnyxContext';
-import supabase from '../lib/supabase';
 import { createRRule, frequencies } from '../utils/rruleHelper';
 
 const { FiRepeat, FiCalendar, FiClock, FiCheck } = FiIcons;
@@ -12,54 +11,52 @@ const RecurringActionForm = ({ onSuccess }) => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    frequency: 3, // RRule.DAILY
+    frequency: 0, // RRule.DAILY
     interval: 1,
     actionType: 'email_check',
     endDate: '',
     daysOfWeek: []
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { user } = useOnyx();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-
+    
     try {
+      // Create RRule
       const rrule = createRRule(
         formData.frequency,
         formData.interval,
         formData.endDate,
         formData.daysOfWeek
       );
-
+      
+      // Get next occurrence
       const nextRun = rrule.after(new Date());
-
-      const { error } = await supabase.from('recurring_actions_ax7y2k').insert([{
-        user_id: user?.id || 'demo-user-id',
-        title: formData.title,
-        description: formData.description,
-        rrule: rrule.toString(),
-        next_run: nextRun.toISOString(),
-        action_type: formData.actionType,
-        action_data: {}
-      }]);
-
-      if (error) throw error;
-
-      onSuccess?.();
-      setFormData({
-        title: '',
-        description: '',
-        frequency: 3,
-        interval: 1,
-        actionType: 'email_check',
-        endDate: '',
-        daysOfWeek: []
-      });
+      
+      // Simulate successful creation
+      setTimeout(() => {
+        // Reset form
+        setFormData({
+          title: '',
+          description: '',
+          frequency: 0,
+          interval: 1,
+          actionType: 'email_check',
+          endDate: '',
+          daysOfWeek: []
+        });
+        
+        // Call success callback
+        if (onSuccess) {
+          onSuccess();
+        }
+        
+        setIsSubmitting(false);
+      }, 1000);
     } catch (error) {
       console.error('Error creating recurring action:', error);
-    } finally {
       setIsSubmitting(false);
     }
   };

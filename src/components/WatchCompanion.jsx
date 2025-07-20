@@ -8,11 +8,12 @@ const { FiWatch, FiMic, FiSend, FiHeart, FiCalendar, FiMail, FiX } = FiIcons;
 
 // This is a simulated watch interface for demonstration purposes
 const WatchCompanion = () => {
-  const [showWatch, setShowWatch] = useState(false);
+  const [showWatch, setShowWatch] = useState(true);
   const [isListening, setIsListening] = useState(false);
   const [command, setCommand] = useState('');
   const [response, setResponse] = useState(null);
   const [view, setView] = useState('home');
+  
   const { watchConnected, watchData, sendMessage } = useOnyx();
 
   useEffect(() => {
@@ -37,12 +38,10 @@ const WatchCompanion = () => {
 
   const handleVoiceCommand = () => {
     setIsListening(true);
-    
     // Simulate voice recognition
     setTimeout(() => {
       setIsListening(false);
       setCommand('Check my calendar for today');
-      
       // Simulate processing
       setTimeout(() => {
         setResponse({
@@ -57,7 +56,11 @@ const WatchCompanion = () => {
     if (!command.trim()) return;
     
     setResponse(null);
-    sendMessage(command);
+    
+    // Send command to main app
+    if (typeof sendMessage === 'function') {
+      sendMessage(command);
+    }
     
     // Simulate response
     setTimeout(() => {
@@ -101,7 +104,7 @@ const WatchCompanion = () => {
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
       <div className="relative">
-        <motion.div 
+        <motion.div
           className="w-64 h-64 rounded-full bg-black border-4 border-gray-800 overflow-hidden shadow-xl"
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -119,27 +122,28 @@ const WatchCompanion = () => {
                 {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </div>
             </div>
-            
+
             {/* Watch Content */}
             {view === 'home' && (
               <div className="flex-1 flex flex-col items-center justify-center">
                 {response ? (
                   <div className="text-center">
                     <div className="mb-2">
-                      <SafeIcon 
+                      <SafeIcon
                         icon={
-                          response.action === "calendar" ? FiCalendar : 
-                          response.action === "email" ? FiMail :
-                          response.action === "health" ? FiHeart : FiWatch
-                        } 
-                        className="w-8 h-8 text-axim-blue-light mx-auto mb-1" 
+                          response.action === "calendar"
+                            ? FiCalendar
+                            : response.action === "email"
+                            ? FiMail
+                            : response.action === "health"
+                            ? FiHeart
+                            : FiWatch
+                        }
+                        className="w-8 h-8 text-axim-blue-light mx-auto mb-1"
                       />
                     </div>
                     <p className="text-xs text-white mb-3">{response.text}</p>
-                    <button 
-                      onClick={clearResponse}
-                      className="bg-axim-navy-light/30 p-1 rounded-full"
-                    >
+                    <button onClick={clearResponse} className="bg-axim-navy-light/30 p-1 rounded-full">
                       <SafeIcon icon={FiX} className="w-4 h-4 text-axim-gray" />
                     </button>
                   </div>
@@ -151,10 +155,7 @@ const WatchCompanion = () => {
                     <p className="text-sm text-white mb-1">Hey James!</p>
                     <p className="text-xs text-axim-gray-light mb-3">How can I help?</p>
                     <div className="flex space-x-2">
-                      <button 
-                        onClick={handleVoiceCommand}
-                        className="p-2 bg-axim-blue-light/20 rounded-full"
-                      >
+                      <button onClick={handleVoiceCommand} className="p-2 bg-axim-blue-light/20 rounded-full">
                         <SafeIcon icon={FiMic} className="w-5 h-5 text-axim-blue-light" />
                       </button>
                       <input
@@ -164,10 +165,7 @@ const WatchCompanion = () => {
                         placeholder="Type..."
                         className="bg-axim-navy-light/30 text-white text-xs p-1 rounded w-24"
                       />
-                      <button 
-                        onClick={handleSendCommand}
-                        className="p-2 bg-axim-blue-light/20 rounded-full"
-                      >
+                      <button onClick={handleSendCommand} className="p-2 bg-axim-blue-light/20 rounded-full">
                         <SafeIcon icon={FiSend} className="w-4 h-4 text-axim-blue-light" />
                       </button>
                     </div>
@@ -175,7 +173,7 @@ const WatchCompanion = () => {
                 )}
               </div>
             )}
-            
+
             {view === 'health' && (
               <div className="flex-1 flex flex-col">
                 <h3 className="text-sm text-white font-medium mb-3 text-center">Health Data</h3>
@@ -196,39 +194,41 @@ const WatchCompanion = () => {
                     <span className="text-xs text-white">{watchData?.stressLevel || 2}/5</span>
                   </div>
                   <div className="w-full bg-axim-navy-dark rounded-full h-1.5 mt-1">
-                    <div 
-                      className="bg-axim-blue-light h-1.5 rounded-full" 
+                    <div
+                      className="bg-axim-blue-light h-1.5 rounded-full"
                       style={{ width: `${(watchData?.stressLevel || 2) * 20}%` }}
                     ></div>
                   </div>
                 </div>
               </div>
             )}
-            
+
             {/* Watch Navigation */}
             <div className="flex justify-around pt-2 border-t border-axim-gray-dark/30">
-              <button 
+              <button
                 onClick={() => changeView('home')}
                 className={`p-1 rounded-full ${view === 'home' ? 'bg-axim-blue-light/20' : ''}`}
               >
-                <SafeIcon icon={FiWatch} className={`w-4 h-4 ${view === 'home' ? 'text-axim-blue-light' : 'text-axim-gray'}`} />
+                <SafeIcon
+                  icon={FiWatch}
+                  className={`w-4 h-4 ${view === 'home' ? 'text-axim-blue-light' : 'text-axim-gray'}`}
+                />
               </button>
-              <button 
+              <button
                 onClick={() => changeView('health')}
                 className={`p-1 rounded-full ${view === 'health' ? 'bg-axim-blue-light/20' : ''}`}
               >
-                <SafeIcon icon={FiHeart} className={`w-4 h-4 ${view === 'health' ? 'text-axim-blue-light' : 'text-axim-gray'}`} />
+                <SafeIcon
+                  icon={FiHeart}
+                  className={`w-4 h-4 ${view === 'health' ? 'text-axim-blue-light' : 'text-axim-gray'}`}
+                />
               </button>
-              <button 
-                onClick={() => setShowWatch(false)}
-                className="p-1 rounded-full"
-              >
+              <button onClick={() => setShowWatch(false)} className="p-1 rounded-full">
                 <SafeIcon icon={FiX} className="w-4 h-4 text-axim-gray" />
               </button>
             </div>
           </div>
         </motion.div>
-        
         {/* Watch Band */}
         <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 w-16 h-6 bg-gray-800 rounded-b-lg"></div>
       </div>

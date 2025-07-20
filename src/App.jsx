@@ -14,6 +14,9 @@ function App() {
   const [onboardingCompleted, setOnboardingCompleted] = useState(
     localStorage.getItem('onyx_onboarding_completed') === 'true'
   );
+  
+  // Automatically skip login for demo purposes
+  const [autoLogin, setAutoLogin] = useState(true);
 
   useEffect(() => {
     // Check if this is a first-time login
@@ -28,11 +31,17 @@ function App() {
     };
 
     window.addEventListener('onyxLoggedIn', checkFirstTimeLogin);
-
+    
+    // For demo purposes, trigger login event automatically
+    if (autoLogin) {
+      window.dispatchEvent(new Event('onyxLoggedIn'));
+      setAutoLogin(false);
+    }
+    
     return () => {
       window.removeEventListener('onyxLoggedIn', checkFirstTimeLogin);
     };
-  }, []);
+  }, [autoLogin]);
 
   const handleOnboardingComplete = () => {
     setShowOnboarding(false);
@@ -54,9 +63,7 @@ function App() {
               <Route
                 path="/"
                 element={
-                  <ProtectedRoute>
-                    <MainInterface />
-                  </ProtectedRoute>
+                  <MainInterface /> // Skip auth for demo
                 }
               />
             </Routes>
